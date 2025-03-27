@@ -1,1 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="controller.MainController">
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <Text text="Welcome to Car Service Management System" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+            <Text text="Please select your role:" style="-fx-font-size: 18;"/>
+            <HBox alignment="CENTER" spacing="20">
+                <Button text="Customer" fx:id="customerBtn" style="-fx-font-size: 16; -fx-pref-width: 150; -fx-pref-height: 50;" 
+                        onAction="#handleCustomerButton"/>
+                <Button text="Technician" fx:id="technicianBtn" style="-fx-font-size: 16; -fx-pref-width: 150; -fx-pref-height: 50;" 
+                        onAction="#handleTechnicianButton"/>
+                <Button text="Admin" fx:id="adminBtn" style="-fx-font-size: 16; -fx-pref-width: 150; -fx-pref-height: 50;" 
+                        onAction="#handleAdminButton"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
