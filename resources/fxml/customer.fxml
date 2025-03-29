@@ -1,1 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerController">
+    <top>
+        <HBox alignment="CENTER" style="-fx-background-color: #f0f0f0; -fx-padding: 10;" spacing="20">
+            <Text text="Customer Dashboard" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+            <Button text="Logout" fx:id="logoutBtn" onAction="#handleLogout" style="-fx-background-color: #ff4444; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
+    <center>
+        <TabPane>
+            <Tab text="Book Service">
+                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+                    <!-- Service Table -->
+                    <TableView fx:id="serviceTable" prefWidth="600" style="-fx-background-color: #fff; -fx-border-color: #ccc;">
+                        <columns>
+                            <TableColumn text="Service Name" fx:id="serviceNameColumn" prefWidth="150"/>
+                            <TableColumn text="Description" fx:id="serviceDescriptionColumn" prefWidth="200"/>
+                            <TableColumn text="Price" fx:id="servicePriceColumn" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                    <Button text="Book Selected Service" fx:id="bookServiceBtn" onAction="#handleBookService" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+                </VBox>
+            </Tab>
+            <Tab text="My Appointments">
+                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+                    <Label text="Appointments will be displayed here"/>
+                    <!-- Later, replace with TableView for showing actual appointments -->
+                </VBox>
+            </Tab>
+            <Tab text="Service History">
+                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+                    <Label text="Service History will be displayed here"/>
+                </VBox>
+            </Tab>
+            <Tab text="Feedback">
+                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+                    <Label text="Feedback form will be implemented here"/>
+                </VBox>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>
 
