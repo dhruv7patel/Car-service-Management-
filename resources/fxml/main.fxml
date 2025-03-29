@@ -1,23 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
-            fx:controller="controller.MainController">
-    <center>
-        <VBox alignment="CENTER" spacing="20">
-            <Text text="Welcome to Car Service Management System" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
-            <Text text="Please select your role:" style="-fx-font-size: 18;"/>
-            <HBox alignment="CENTER" spacing="20">
-                <Button text="Customer" fx:id="customerBtn" style="-fx-font-size: 16; -fx-pref-width: 150; -fx-pref-height: 50;" 
-                        onAction="#handleCustomerButton"/>
-                <Button text="Technician" fx:id="technicianBtn" style="-fx-font-size: 16; -fx-pref-width: 150; -fx-pref-height: 50;" 
-                        onAction="#handleTechnicianButton"/>
-                <Button text="Admin" fx:id="adminBtn" style="-fx-font-size: 16; -fx-pref-width: 150; -fx-pref-height: 50;" 
-                        onAction="#handleAdminButton"/>
+<BorderPane prefHeight="300.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+   <padding>
+      <Insets bottom="35.0" left="35.0" right="35.0" top="35.0" />
+   </padding>
+   <center>
+        <VBox alignment="CENTER" spacing="40.0" BorderPane.alignment="CENTER">
+            <Text fill="#2878c9" style="-fx-font-size: 24; -fx-font-weight: bold;" text="Welcome to Car Service Management System">
+            <font>
+               <Font name="Times New Roman Bold" size="34.0" />
+            </font>
+            <effect>
+               <Glow level="0.31" />
+            </effect></Text>
+            <Text fill="#106dae" style="-fx-font-size: 18;" text="Please select your role:">
+            <font>
+               <Font size="24.0" />
+            </font></Text>
+            <HBox alignment="CENTER" spacing="40.0">
+                <Button fx:id="customerBtn" alignment="CENTER" contentDisplay="CENTER" onAction="#handleCustomerButton" style="-fx-font-size: 16; -fx-pref-width: 150; -fx-pref-height: 50;" text="Customer" />
+                <Button fx:id="technicianBtn" alignment="CENTER" contentDisplay="CENTER" onAction="#handleTechnicianButton" style="-fx-font-size: 16; -fx-pref-width: 150; -fx-pref-height: 50;" text="Technician" />
+                <Button fx:id="adminBtn" alignment="CENTER" contentDisplay="CENTER" onAction="#handleAdminButton" style="-fx-font-size: 16; -fx-pref-width: 150; -fx-pref-height: 50;" text="Admin" />
+            <effect>
+               <Lighting specularConstant="0.46" specularExponent="25.5" surfaceScale="6.55">
+                  <bumpInput>
+                     <Shadow />
+                  </bumpInput>
+                  <light>
+                     <Light.Distant azimuth="299.31" elevation="51.61">
+                        <color>
+                           <Color red="0.2629629671573639" green="0.8034567832946777" blue="1.0" />
+                        </color>
+                     </Light.Distant>
+                  </light>
+               </Lighting>
+            </effect>
             </HBox>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
         </VBox>
-    </center>
+   </center>
 </BorderPane>
