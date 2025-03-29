@@ -1,1 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="controller.SignupController" spacing="10" alignment="CENTER">
+    <Text fx:id="titleText" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+    <Label text="Username:"/>
+    <TextField fx:id="usernameField" promptText="Choose a username"/>
+    <Label text="Password:"/>
+    <PasswordField fx:id="passwordField" promptText="Choose a password"/>
+    <Label text="Email:"/>
+    <TextField fx:id="emailField" promptText="Enter your email"/>
+    <Label text="Phone:"/>
+    <TextField fx:id="phoneField" promptText="Enter your phone number"/>
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Register" fx:id="registerBtn" onAction="#handleRegister"/>
+        <Button text="Back to Login" fx:id="backBtn" onAction="#handleBack"/>
+    </HBox>
+    <Label fx:id="messageLabel" style="-fx-text-fill: red;"/>
+</VBox>
