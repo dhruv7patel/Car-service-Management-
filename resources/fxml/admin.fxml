@@ -1,1 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="controller.AdminController">
+    <top>
+        <HBox alignment="CENTER" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+            <Text text="Admin Dashboard" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+            <Button text="Logout" fx:id="logoutBtn" onAction="#handleLogout" style="-fx-background-color: #ff4444; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
+    <center>
+        <TabPane>
+            <Tab text="Manage Services">
+                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+                    <!-- Service management will go here -->
+                    <Label text="Service management will be implemented here"/>
+                </VBox>
+            </Tab>
+            <Tab text="Manage Users">
+                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+                    <!-- User management will go here -->
+                    <Label text="User management will be implemented here"/>
+                </VBox>
+            </Tab>
+            <Tab text="Reports">
+                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+                    <!-- Reports will go here -->
+                    <Label text="Reports will be implemented here"/>
+                </VBox>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>
