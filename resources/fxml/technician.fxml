@@ -1,1 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="controller.TechnicianController">
+    <top>
+        <HBox alignment="CENTER" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+            <Text text="Technician Dashboard" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+            <Button text="Logout" fx:id="logoutBtn" onAction="#handleLogout" style="-fx-background-color: #ff4444; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
+    <center>
+        <TabPane>
+            <Tab text="My Tasks">
+                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+                    <!-- Task list will go here -->
+                    <Label text="Task management will be implemented here"/>
+                </VBox>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>
