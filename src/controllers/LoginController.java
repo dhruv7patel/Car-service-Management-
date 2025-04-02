@@ -57,7 +57,7 @@ public class LoginController {
                 default -> throw new IllegalStateException("Unknown role");
             };
             
-            loadScene(fxmlPath, user.getRole() + " Dashboard");
+            loadScene(fxmlPath, user.getRole() + " Dashboard", user);
             
         } catch (Exception e) {
             messageLabel.setText("Login failed: " + e.getMessage());
@@ -81,8 +81,26 @@ public class LoginController {
         }
     }
     
-    private void loadScene(String fxmlPath, String title) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+    private void loadScene(String fxmlPath, String title, User user) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
+        
+        // Pass the user object to the next controller
+        switch (user.getRole().toUpperCase()) {
+            case "CUSTOMER" -> {
+                CustomerController controller = loader.getController();
+                controller.setCustomer(user); // Critical: Pass the user object
+            }
+            case "TECHNICIAN" -> {
+                TechnicianController controller = loader.getController();
+                controller.setTechnician(user);
+            }
+            case "ADMIN" -> {
+                AdminController controller = loader.getController();
+                controller.setAdmin(user);
+            }
+        }
+        
         loadScene(root, title);
     }
     
