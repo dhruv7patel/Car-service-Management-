@@ -2,6 +2,7 @@ package controller;
 
 import dao.ServiceDAO;
 import dao.DBConnection;
+import dao.AppointmentDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -9,17 +10,24 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.Service;
-import javafx.scene.control.cell.PropertyValueFactory;
+import model.User;
+import model.Appointment;
+import javafx.concurrent.Task;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomerController {
 
     @FXML
     private Button logoutBtn;
+
     @FXML
     private TableView<Service> serviceTable;
     @FXML
@@ -27,49 +35,115 @@ public class CustomerController {
     @FXML
     private TableColumn<Service, String> serviceDescriptionColumn;
     @FXML
-    private TableColumn<Service, Double> servicePriceColumn;  
+    private TableColumn<Service, Double> servicePriceColumn;
 
     @FXML
-    private Button bookServiceBtn;  // Button to book service
+    private Button bookServiceBtn;
+
+    @FXML
+    private TableView<Appointment> appointmentTable;
+    @FXML
+    private TableColumn<Appointment, Integer> appointmentIdColumn;
+    @FXML
+    private TableColumn<Appointment, String> appointmentServiceNameColumn;
+    @FXML
+    private TableColumn<Appointment, String> appointmentDateColumn;
+    @FXML
+    private TableColumn<Appointment, String> appointmentStatusColumn;
 
     private ServiceDAO serviceDAO;
+    private AppointmentDAO appointmentDAO;
+    private ObservableList<Appointment> appointmentsList = FXCollections.observableArrayList();
+    private Map<Integer, String> serviceMap = new HashMap<>();
+    private int customerId;
 
-    // Constructor
-    public CustomerController() {
+    // Default constructor
+    public CustomerController() {}
+
+    // Method to set the customer information (called after login)
+    public void setCustomer(User customer) {
+        this.customerId = customer.getId();
+    }
+
+    @FXML
+    public void initialize() {
         try {
             Connection connection = DBConnection.getConnection();
-            if (connection != null) {
-                serviceDAO = new ServiceDAO(connection);
-            } else {
-                System.out.println("Failed to connect to the database.");
-            }
+            this.serviceDAO = new ServiceDAO(connection);
+            this.appointmentDAO = new AppointmentDAO(connection);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
 
-    // Initialize method to set up the TableView
-    @FXML
-    public void initialize() {
-        // Set up table columns using PropertyValueFactory for regular getters
+        // Set up service table columns
         serviceNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         serviceDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         servicePriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-        
+
+        // Set up appointment table columns
+        appointmentIdColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentId"));
+        appointmentServiceNameColumn.setCellValueFactory(cellData -> {
+            int serviceId = cellData.getValue().getServiceId();
+            return new javafx.beans.property.SimpleStringProperty(serviceMap.getOrDefault(serviceId, "Unknown"));
+        });
+        appointmentDateColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentDate"));
+        appointmentStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        // Load data
         try {
-            // Load services from the database and set them in the table
-            List<Service> services = serviceDAO.getAllServices();
-            ObservableList<Service> serviceList = FXCollections.observableArrayList(services);
-            serviceTable.setItems(serviceList);
+            loadServiceNames();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        loadServicesAndAppointments();
 
-        // Add an action listener to the book service button
         bookServiceBtn.setOnAction(event -> handleBookService());
     }
 
-    // Handle logout action
+    private void loadServiceNames() throws SQLException {
+        List<Service> services = serviceDAO.getAllServices();
+        for (Service service : services) {
+            serviceMap.put(service.getServiceId(), service.getName());
+        }
+    }
+
+    private void loadServicesAndAppointments() {
+        Task<List<Service>> loadServicesTask = new Task<>() {
+            @Override
+            protected List<Service> call() throws Exception {
+                return serviceDAO.getAllServices();
+            }
+        };
+
+        loadServicesTask.setOnSucceeded(event -> {
+            ObservableList<Service> serviceList = FXCollections.observableArrayList(loadServicesTask.getValue());
+            serviceTable.setItems(serviceList);
+            loadAppointments(customerId);
+        });
+
+        loadServicesTask.setOnFailed(event -> loadServicesTask.getException().printStackTrace());
+
+        new Thread(loadServicesTask).start();
+    }
+
+    private void loadAppointments(int customerId) {
+        Task<List<Appointment>> loadAppointmentsTask = new Task<>() {
+            @Override
+            protected List<Appointment> call() throws Exception {
+                return appointmentDAO.getActiveAppointmentsByCustomer(customerId);
+            }
+        };
+
+        loadAppointmentsTask.setOnSucceeded(event -> {
+            appointmentsList.setAll(loadAppointmentsTask.getValue());
+            appointmentTable.setItems(appointmentsList);
+        });
+
+        loadAppointmentsTask.setOnFailed(event -> loadAppointmentsTask.getException().printStackTrace());
+
+        new Thread(loadAppointmentsTask).start();
+    }
+
     @FXML
     private void handleLogout() {
         try {
@@ -82,15 +156,12 @@ public class CustomerController {
         }
     }
 
-    // Handle booking service action
     @FXML
     private void handleBookService() {
         Service selectedService = serviceTable.getSelectionModel().getSelectedItem();
         if (selectedService != null) {
-            // Open a dialog to get booking details
             openBookingDialog(selectedService);
         } else {
-            // Alert if no service is selected
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No Service Selected");
             alert.setHeaderText(null);
@@ -99,24 +170,20 @@ public class CustomerController {
         }
     }
 
-    // Open a dialog to get the booking details (e.g., date, time)
-    
     private void openBookingDialog(Service service) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/booking.fxml"));
             Parent root = loader.load();
-
-            // Pass selected service to the booking dialog
             BookingController bookingDialogController = loader.getController();
-            bookingDialogController.setService(service);
+            bookingDialogController.setService(service, customerId);
 
             Stage dialogStage = new Stage();
             dialogStage.setScene(new Scene(root));
             dialogStage.setTitle("Book Service");
+            dialogStage.setOnHidden(e -> loadAppointments(customerId)); 
             dialogStage.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
-
