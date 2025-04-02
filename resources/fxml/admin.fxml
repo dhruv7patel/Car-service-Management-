@@ -3,35 +3,128 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
-            fx:controller="controller.AdminController">
-    <top>
-        <HBox alignment="CENTER" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
-            <Text text="Admin Dashboard" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-            <Button text="Logout" fx:id="logoutBtn" onAction="#handleLogout" style="-fx-background-color: #ff4444; -fx-text-fill: white;"/>
-        </HBox>
-    </top>
-    <center>
-        <TabPane>
-            <Tab text="Manage Services">
-                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
-                    <!-- Service management will go here -->
-                    <Label text="Service management will be implemented here"/>
-                </VBox>
-            </Tab>
-            <Tab text="Manage Users">
-                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
-                    <!-- User management will go here -->
-                    <Label text="User management will be implemented here"/>
-                </VBox>
-            </Tab>
-            <Tab text="Reports">
-                <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
-                    <!-- Reports will go here -->
-                    <Label text="Reports will be implemented here"/>
-                </VBox>
-            </Tab>
-        </TabPane>
-    </center>
+<BorderPane xmlns="http://javafx.com/javafx/17"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="controller.AdminController">
+	<top>
+		<HBox alignment="CENTER"
+			style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+			<Text text="Admin Dashboard"
+				style="-fx-font-size: 20; -fx-font-weight: bold;" />
+			<Button text="Logout" fx:id="logoutBtn"
+				onAction="#handleLogout"
+				style="-fx-background-color: #ff4444; -fx-text-fill: white;" />
+		</HBox>
+	</top>
+	<center>
+		<TabPane>
+			<Tab text="Manage Services">
+				<VBox spacing="10" style="-fx-padding: 20;">
+					<HBox spacing="10" alignment="CENTER_LEFT">
+						<TextField fx:id="serviceNameField"
+							promptText="Service Name" />
+						<TextField fx:id="serviceDescriptionField"
+							promptText="Description" />
+						<TextField fx:id="servicePriceField" promptText="Price" />
+						<Button text="Add Service" onAction="#handleAddService" />
+						<Button text="Update Service"
+							onAction="#handleUpdateService" />
+						<Button text="Delete Service"
+							onAction="#handleDeleteService" />
+					</HBox>
+					<TableView fx:id="servicesTable">
+						<columns>
+							<TableColumn text="ID" prefWidth="50">
+								<cellValueFactory>
+									<PropertyValueFactory property="serviceId" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn text="Name" prefWidth="150">
+								<cellValueFactory>
+									<PropertyValueFactory property="name" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn text="Description" prefWidth="250">
+								<cellValueFactory>
+									<PropertyValueFactory
+										property="description" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn text="Price" prefWidth="80">
+								<cellValueFactory>
+									<PropertyValueFactory property="price" />
+								</cellValueFactory>
+							</TableColumn>
+						</columns>
+					</TableView>
+				</VBox>
+			</Tab>
+			<Tab text="Manage Users">
+				<VBox spacing="10" style="-fx-padding: 20;">
+					<HBox spacing="10" alignment="CENTER_LEFT">
+						<TextField fx:id="usernameField" promptText="Username" />
+						<TextField fx:id="passwordField" promptText="Password" />
+						<TextField fx:id="emailField" promptText="Email" />
+						<TextField fx:id="phoneField" promptText="Phone" />
+
+						<ComboBox fx:id="roleComboBox" promptText="Select Role" />
+
+						<Button text="Add User" onAction="#handleAddUser" />
+						<Button text="Update User" onAction="#handleUpdateUser" />
+						<Button text="Delete User" onAction="#handleDeleteUser" />
+					</HBox>
+					<TableView fx:id="usersTable">
+						<columns>
+							<TableColumn text="ID" prefWidth="50">
+								<cellValueFactory>
+									<PropertyValueFactory property="id" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn text="Username" prefWidth="100">
+								<cellValueFactory>
+									<PropertyValueFactory property="username" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn text="Email" prefWidth="150">
+								<cellValueFactory>
+									<PropertyValueFactory property="email" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn text="Phone" prefWidth="100">
+								<cellValueFactory>
+									<PropertyValueFactory property="phone" />
+								</cellValueFactory>
+							</TableColumn>
+							<TableColumn text="Role" prefWidth="80">
+								<cellValueFactory>
+									<PropertyValueFactory property="role" />
+								</cellValueFactory>
+							</TableColumn>
+						</columns>
+					</TableView>
+				</VBox>
+			</Tab>
+			<Tab text="Reports">
+				<VBox spacing="10" style="-fx-padding: 20;">
+					<HBox spacing="10" alignment="CENTER_LEFT">
+						<DatePicker fx:id="startDatePicker"
+							promptText="Start Date" />
+						<DatePicker fx:id="endDatePicker" promptText="End Date" />
+						<Button text="Generate Report"
+							onAction="#handleGenerateReport" />
+					</HBox>
+					<TableView fx:id="reportsTable">
+						<columns>
+							<TableColumn text="Report Type" prefWidth="150" />
+							<TableColumn text="Data" prefWidth="300" />
+						</columns>
+					</TableView>
+					<Button text="Export to PDF" onAction="#handleExportToPDF" />
+				</VBox>
+			</Tab>
+		</TabPane>
+	</center>
 </BorderPane>
