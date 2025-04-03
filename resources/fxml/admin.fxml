@@ -1,128 +1,305 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17"
-	xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="controller.AdminController">
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminController">
 	<top>
-		<HBox alignment="CENTER"
-			style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
-			<Text text="Admin Dashboard"
-				style="-fx-font-size: 20; -fx-font-weight: bold;" />
-			<Button text="Logout" fx:id="logoutBtn"
-				onAction="#handleLogout"
-				style="-fx-background-color: #ff4444; -fx-text-fill: white;" />
+		<HBox alignment="CENTER" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+			<Text style="-fx-font-size: 20; -fx-font-weight: bold;" text="Admin Dashboard" />
+			<Button fx:id="logoutBtn" onAction="#handleLogout" style="-fx-background-color: #ff4444; -fx-text-fill: white;" text="Logout">
+            <effect>
+               <Lighting diffuseConstant="1.16" specularConstant="0.8" specularExponent="40.0" surfaceScale="3.7">
+                  <bumpInput>
+                     <Shadow />
+                  </bumpInput>
+                  <light>
+                     <Light.Distant azimuth="2.06" elevation="51.61" />
+                  </light>
+               </Lighting>
+            </effect></Button>
 		</HBox>
 	</top>
 	<center>
 		<TabPane>
 			<Tab text="Manage Services">
 				<VBox spacing="10" style="-fx-padding: 20;">
-					<HBox spacing="10" alignment="CENTER_LEFT">
-						<TextField fx:id="serviceNameField"
-							promptText="Service Name" />
-						<TextField fx:id="serviceDescriptionField"
-							promptText="Description" />
+					<HBox alignment="CENTER_LEFT" spacing="10">
+						<TextField fx:id="serviceNameField" promptText="Service Name" />
+						<TextField fx:id="serviceDescriptionField" promptText="Description" />
 						<TextField fx:id="servicePriceField" promptText="Price" />
-						<Button text="Add Service" onAction="#handleAddService" />
-						<Button text="Update Service"
-							onAction="#handleUpdateService" />
-						<Button text="Delete Service"
-							onAction="#handleDeleteService" />
+						<Button onAction="#handleAddService" text="Add Service">
+                     <effect>
+                        <Lighting specularConstant="1.5" specularExponent="40.0" surfaceScale="3.0">
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant>
+                                 <color>
+                                    <Color red="0.5960784554481506" green="1.0" blue="0.5411764979362488" />
+                                 </color>
+                              </Light.Distant>
+                           </light>
+                        </Lighting>
+                     </effect></Button>
+						<Button onAction="#handleUpdateService" text="Update Service">
+                     <effect>
+                        <Lighting specularConstant="1.5" specularExponent="40.0" surfaceScale="3.0">
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant>
+                                 <color>
+                                    <Color red="0.5960784554481506" green="1.0" blue="0.5411764979362488" />
+                                 </color>
+                              </Light.Distant>
+                           </light>
+                        </Lighting>
+                     </effect></Button>
+						<Button onAction="#handleDeleteService" text="Delete Service">
+                     <effect>
+                        <Lighting diffuseConstant="1.2" specularConstant="1.3" specularExponent="40.0" surfaceScale="4.34">
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant>
+                                 <color>
+                                    <Color red="1.0" green="0.40296295285224915" blue="0.31111112236976624" />
+                                 </color>
+                              </Light.Distant>
+                           </light>
+                        </Lighting>
+                     </effect></Button>
 					</HBox>
 					<TableView fx:id="servicesTable">
 						<columns>
-							<TableColumn text="ID" prefWidth="50">
+							<TableColumn prefWidth="50" text="ID">
 								<cellValueFactory>
 									<PropertyValueFactory property="serviceId" />
 								</cellValueFactory>
 							</TableColumn>
-							<TableColumn text="Name" prefWidth="150">
+							<TableColumn prefWidth="150" text="Name">
 								<cellValueFactory>
 									<PropertyValueFactory property="name" />
 								</cellValueFactory>
 							</TableColumn>
-							<TableColumn text="Description" prefWidth="250">
+							<TableColumn prefWidth="250" text="Description">
 								<cellValueFactory>
-									<PropertyValueFactory
-										property="description" />
+									<PropertyValueFactory property="description" />
 								</cellValueFactory>
 							</TableColumn>
-							<TableColumn text="Price" prefWidth="80">
+							<TableColumn prefWidth="80" text="Price">
 								<cellValueFactory>
 									<PropertyValueFactory property="price" />
 								</cellValueFactory>
 							</TableColumn>
 						</columns>
+                  <effect>
+                     <Lighting diffuseConstant="1.3" specularConstant="0.25" specularExponent="40.0" surfaceScale="3.0">
+                        <bumpInput>
+                           <Shadow />
+                        </bumpInput>
+                        <light>
+                           <Light.Distant>
+                              <color>
+                                 <Color red="0.2862745225429535" green="0.7960784435272217" blue="1.0" />
+                              </color>
+                           </Light.Distant>
+                        </light>
+                     </Lighting>
+                  </effect>
 					</TableView>
 				</VBox>
 			</Tab>
 			<Tab text="Manage Users">
 				<VBox spacing="10" style="-fx-padding: 20;">
-					<HBox spacing="10" alignment="CENTER_LEFT">
+					<HBox alignment="CENTER_LEFT" spacing="10">
 						<TextField fx:id="usernameField" promptText="Username" />
 						<TextField fx:id="passwordField" promptText="Password" />
 						<TextField fx:id="emailField" promptText="Email" />
 						<TextField fx:id="phoneField" promptText="Phone" />
 
-						<ComboBox fx:id="roleComboBox" promptText="Select Role" />
+						<ComboBox fx:id="roleComboBox" promptText="Select Role">
+                     <effect>
+                        <Lighting specularConstant="1.5" specularExponent="40.0" surfaceScale="3.0">
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant>
+                                 <color>
+                                    <Color red="0.5960784554481506" green="1.0" blue="0.5411764979362488" />
+                                 </color>
+                              </Light.Distant>
+                           </light>
+                        </Lighting>
+                     </effect></ComboBox>
 
-						<Button text="Add User" onAction="#handleAddUser" />
-						<Button text="Update User" onAction="#handleUpdateUser" />
-						<Button text="Delete User" onAction="#handleDeleteUser" />
+						<Button onAction="#handleAddUser" text="Add User">
+                     <effect>
+                        <Lighting specularConstant="1.5" specularExponent="40.0" surfaceScale="3.0">
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant>
+                                 <color>
+                                    <Color red="0.5960784554481506" green="1.0" blue="0.5411764979362488" />
+                                 </color>
+                              </Light.Distant>
+                           </light>
+                        </Lighting>
+                     </effect></Button>
+						<Button onAction="#handleUpdateUser" text="Update User">
+                     <effect>
+                        <Lighting specularConstant="1.5" specularExponent="40.0" surfaceScale="3.0">
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant>
+                                 <color>
+                                    <Color red="0.5960784554481506" green="1.0" blue="0.5411764979362488" />
+                                 </color>
+                              </Light.Distant>
+                           </light>
+                        </Lighting>
+                     </effect></Button>
+						<Button onAction="#handleDeleteUser" text="Delete User">
+                     <effect>
+                        <Lighting diffuseConstant="1.2" specularConstant="1.3" specularExponent="40.0" surfaceScale="4.34">
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant>
+                                 <color>
+                                    <Color red="1.0" green="0.40392157435417175" blue="0.30980393290519714" />
+                                 </color>
+                              </Light.Distant>
+                           </light>
+                        </Lighting>
+                     </effect></Button>
 					</HBox>
 					<TableView fx:id="usersTable">
 						<columns>
-							<TableColumn text="ID" prefWidth="50">
+							<TableColumn prefWidth="50" text="ID">
 								<cellValueFactory>
 									<PropertyValueFactory property="id" />
 								</cellValueFactory>
 							</TableColumn>
-							<TableColumn text="Username" prefWidth="100">
+							<TableColumn prefWidth="100" text="Username">
 								<cellValueFactory>
 									<PropertyValueFactory property="username" />
 								</cellValueFactory>
 							</TableColumn>
-							<TableColumn text="Email" prefWidth="150">
+							<TableColumn prefWidth="150" text="Email">
 								<cellValueFactory>
 									<PropertyValueFactory property="email" />
 								</cellValueFactory>
 							</TableColumn>
-							<TableColumn text="Phone" prefWidth="100">
+							<TableColumn prefWidth="100" text="Phone">
 								<cellValueFactory>
 									<PropertyValueFactory property="phone" />
 								</cellValueFactory>
 							</TableColumn>
-							<TableColumn text="Role" prefWidth="80">
+							<TableColumn prefWidth="80" text="Role">
 								<cellValueFactory>
 									<PropertyValueFactory property="role" />
 								</cellValueFactory>
 							</TableColumn>
 						</columns>
+                  <effect>
+                     <Lighting diffuseConstant="1.3" specularConstant="0.24" specularExponent="40.0" surfaceScale="3.0">
+                        <bumpInput>
+                           <Shadow />
+                        </bumpInput>
+                        <light>
+                           <Light.Distant>
+                              <color>
+                                 <Color red="0.2862745225429535" green="0.7960784435272217" blue="1.0" />
+                              </color>
+                           </Light.Distant>
+                        </light>
+                     </Lighting>
+                  </effect>
 					</TableView>
 				</VBox>
 			</Tab>
 			<Tab text="Reports">
 				<VBox spacing="10" style="-fx-padding: 20;">
-					<HBox spacing="10" alignment="CENTER_LEFT">
-						<DatePicker fx:id="startDatePicker"
-							promptText="Start Date" />
+					<HBox alignment="CENTER_LEFT" spacing="10">
+						<DatePicker fx:id="startDatePicker" promptText="Start Date" />
 						<DatePicker fx:id="endDatePicker" promptText="End Date" />
-						<Button text="Generate Report"
-							onAction="#handleGenerateReport" />
+						<Button onAction="#handleGenerateReport" text="Generate Report">
+                     <effect>
+                        <Lighting specularConstant="1.5" specularExponent="40.0" surfaceScale="3.0">
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant>
+                                 <color>
+                                    <Color red="0.5943210124969482" green="1.0" blue="0.5407407283782959" />
+                                 </color>
+                              </Light.Distant>
+                           </light>
+                        </Lighting>
+                     </effect></Button>
 					</HBox>
 					<TableView fx:id="reportsTable">
 						<columns>
-							<TableColumn text="Report Type" prefWidth="150" />
-							<TableColumn text="Data" prefWidth="300" />
+							<TableColumn prefWidth="150" text="Report Type" />
+							<TableColumn prefWidth="300" text="Data" />
 						</columns>
+                  <effect>
+                     <Lighting diffuseConstant="1.3" specularConstant="0.25" specularExponent="40.0" surfaceScale="3.0">
+                        <bumpInput>
+                           <Shadow />
+                        </bumpInput>
+                        <light>
+                           <Light.Distant>
+                              <color>
+                                 <Color red="0.2862745225429535" green="0.7960784435272217" blue="1.0" />
+                              </color>
+                           </Light.Distant>
+                        </light>
+                     </Lighting>
+                  </effect>
 					</TableView>
-					<Button text="Export to PDF" onAction="#handleExportToPDF" />
+					<Button text="Export to PDF">
+                  <effect>
+                     <Lighting specularConstant="1.5" specularExponent="40.0" surfaceScale="3.0">
+                        <bumpInput>
+                           <Shadow />
+                        </bumpInput>
+                        <light>
+                           <Light.Distant>
+                              <color>
+                                 <Color red="0.5943210124969482" green="1.0" blue="0.5407407283782959" />
+                              </color>
+                           </Light.Distant>
+                        </light>
+                     </Lighting>
+                  </effect></Button>
 				</VBox>
 			</Tab>
 		</TabPane>
