@@ -3,6 +3,7 @@ package controller;
 import dao.ServiceDAO;
 import dao.DBConnection;
 import dao.AppointmentDAO;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -50,6 +51,18 @@ public class CustomerController {
     private TableColumn<Appointment, String> appointmentDateColumn;
     @FXML
     private TableColumn<Appointment, String> appointmentStatusColumn;
+    @FXML
+    private TableView<Appointment> historyTable;
+    @FXML
+    private TableColumn<Appointment, Integer> historyIdColumn;
+    @FXML
+    private TableColumn<Appointment, String> historyServiceNameColumn;
+    @FXML
+    private TableColumn<Appointment, String> historyDateColumn;
+    @FXML
+    private TableColumn<Appointment, String> historyStatusColumn;
+    @FXML
+    private TableColumn<Appointment, String> historyRecommendationColumn;
 
     private ServiceDAO serviceDAO;
     private AppointmentDAO appointmentDAO;
@@ -63,6 +76,7 @@ public class CustomerController {
     // Method to set the customer information (called after login)
     public void setCustomer(User customer) {
         this.customerId = customer.getId();
+        loadServiceHistory(customerId);
     }
 
     @FXML
@@ -84,10 +98,20 @@ public class CustomerController {
         appointmentIdColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentId"));
         appointmentServiceNameColumn.setCellValueFactory(cellData -> {
             int serviceId = cellData.getValue().getServiceId();
-            return new javafx.beans.property.SimpleStringProperty(serviceMap.getOrDefault(serviceId, "Unknown"));
+            return new SimpleStringProperty(serviceMap.getOrDefault(serviceId, "Unknown"));
         });
         appointmentDateColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentDate"));
         appointmentStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        
+     // Set up history table columns
+        historyIdColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentId"));
+        historyServiceNameColumn.setCellValueFactory(cellData -> {
+            int serviceId = cellData.getValue().getServiceId();
+            return new SimpleStringProperty(serviceMap.getOrDefault(serviceId, "Unknown"));
+        });
+        historyDateColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentDate"));
+        historyStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        historyRecommendationColumn.setCellValueFactory(new PropertyValueFactory<>("recommendation"));
 
         // Load data
         try {
@@ -143,6 +167,24 @@ public class CustomerController {
 
         new Thread(loadAppointmentsTask).start();
     }
+    
+    private void loadServiceHistory(int customerId) {
+        Task<List<Appointment>> loadHistoryTask = new Task<>() {
+            @Override
+            protected List<Appointment> call() throws Exception {
+                return appointmentDAO.getCompletedAppointmentsByCustomer(customerId);
+            }
+        };
+
+        loadHistoryTask.setOnSucceeded(event -> {
+            ObservableList<Appointment> historyList = FXCollections.observableArrayList(loadHistoryTask.getValue());
+            historyTable.setItems(historyList);
+        });
+
+        loadHistoryTask.setOnFailed(event -> loadHistoryTask.getException().printStackTrace());
+        new Thread(loadHistoryTask).start();
+    }
+
 
     @FXML
     private void handleLogout() {
