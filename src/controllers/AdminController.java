@@ -10,7 +10,12 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import model.Service;
 import model.User;
+import dao.DBConnection;
+import dao.ServiceDAO;
+import dao.UserDAO;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 public class AdminController {
     @FXML private Button logoutBtn;
@@ -34,13 +39,29 @@ public class AdminController {
     @FXML private DatePicker endDatePicker;
     @FXML private TableView<String> reportsTable;
     
+    private int adminId;
+    private ServiceDAO serviceDAO;
+    private UserDAO userDAO;
+    
     private ObservableList<Service> services = FXCollections.observableArrayList();
     private ObservableList<User> users = FXCollections.observableArrayList();
     
+    public void setAdmin(User admin) {
+        this.adminId = admin.getId();
+        try {
+            this.serviceDAO = new ServiceDAO(DBConnection.getConnection());
+            this.userDAO = new UserDAO();
+            loadDataFromDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "Failed to connect to database.");
+        }
+    }
+
     @FXML
     public void initialize() {
-    	roleComboBox.getItems().addAll("admin", "technician", "customer");
-    	
+        roleComboBox.getItems().addAll("admin", "technician", "customer");
+        
         servicesTable.setItems(services);
         servicesTable.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
@@ -49,7 +70,6 @@ public class AdminController {
                 }
             });
         
-        // Initialize users table
         usersTable.setItems(users);
         usersTable.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
@@ -57,19 +77,22 @@ public class AdminController {
                     populateUserFields(newSelection);
                 }
             });
-        
-        // Load sample data (in a real app, this would come from a database)
-        loadSampleData();
     }
     
-    private void loadSampleData() {
-        // Sample services
-        services.add(new Service(1, "Oil Change", "Basic oil change service", 49.99));
-        services.add(new Service(2, "Tire Rotation", "Rotate all four tires", 29.99));
-        
-        // Sample users
-        users.add(new User("admin1", "pass123", "admin@example.com", "1234567890", "admin"));
-        users.add(new User("tech1", "pass123", "tech@example.com", "0987654321", "technician"));
+    private void loadDataFromDatabase() {
+        try {
+            // Load services
+            List<Service> serviceList = serviceDAO.getAllServices();
+            services.setAll(serviceList);
+            
+            // Load users
+            List<User> userList = userDAO.getAllUsers();
+            users.setAll(userList);
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "Failed to load data from database.");
+        }
     }
     
     // Service management methods
@@ -82,16 +105,27 @@ public class AdminController {
     @FXML
     private void handleAddService() {
         try {
+            if (serviceNameField.getText().isEmpty() || servicePriceField.getText().isEmpty()) {
+                showAlert("Input Error", "Service name and price are required.");
+                return;
+            }
+
             Service service = new Service(
-                services.size() + 1,
+                0, // ID will be set by database
                 serviceNameField.getText(),
                 serviceDescriptionField.getText(),
                 Double.parseDouble(servicePriceField.getText())
             );
+            
+            serviceDAO.addService(service);
             services.add(service);
             clearServiceFields();
+            showAlert("Success", "Service added successfully.");
         } catch (NumberFormatException e) {
             showAlert("Invalid Input", "Please enter a valid price.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "Failed to add service: " + e.getMessage());
         }
     }
     
@@ -100,13 +134,24 @@ public class AdminController {
         Service selectedService = servicesTable.getSelectionModel().getSelectedItem();
         if (selectedService != null) {
             try {
+                if (serviceNameField.getText().isEmpty() || servicePriceField.getText().isEmpty()) {
+                    showAlert("Input Error", "Service name and price are required.");
+                    return;
+                }
+
                 selectedService.setName(serviceNameField.getText());
                 selectedService.setDescription(serviceDescriptionField.getText());
                 selectedService.setPrice(Double.parseDouble(servicePriceField.getText()));
+                
+                serviceDAO.updateService(selectedService);
                 servicesTable.refresh();
                 clearServiceFields();
+                showAlert("Success", "Service updated successfully.");
             } catch (NumberFormatException e) {
                 showAlert("Invalid Input", "Please enter a valid price.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert("Database Error", "Failed to update service: " + e.getMessage());
             }
         } else {
             showAlert("No Selection", "Please select a service to update.");
@@ -117,8 +162,15 @@ public class AdminController {
     private void handleDeleteService() {
         Service selectedService = servicesTable.getSelectionModel().getSelectedItem();
         if (selectedService != null) {
-            services.remove(selectedService);
-            clearServiceFields();
+            try {
+                serviceDAO.deleteService(selectedService.getServiceId());
+                services.remove(selectedService);
+                clearServiceFields();
+                showAlert("Success", "Service deleted successfully.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert("Database Error", "Failed to delete service: " + e.getMessage());
+            }
         } else {
             showAlert("No Selection", "Please select a service to delete.");
         }
@@ -141,29 +193,64 @@ public class AdminController {
     
     @FXML
     private void handleAddUser() {
-        User user = new User(
-            usernameField.getText(),
-            passwordField.getText(),
-            emailField.getText(),
-            phoneField.getText(),
-            roleComboBox.getValue()
-        );
-        user.setId(users.size() + 1);
-        users.add(user);
-        clearUserFields();
+        try {
+            if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty() || 
+                emailField.getText().isEmpty() || roleComboBox.getValue() == null) {
+                showAlert("Input Error", "Username, password, email and role are required.");
+                return;
+            }
+
+            User user = new User(
+                usernameField.getText(),
+                passwordField.getText(),
+                emailField.getText(),
+                phoneField.getText(),
+                roleComboBox.getValue()
+            );
+            
+            if (userDAO.registerUser(user)) {
+                // Refresh user list
+                List<User> userList = userDAO.getAllUsers();
+                users.setAll(userList);
+                clearUserFields();
+                showAlert("Success", "User added successfully.");
+            } else {
+                showAlert("Error", "Failed to add user.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "Failed to add user: " + e.getMessage());
+        }
     }
     
     @FXML
     private void handleUpdateUser() {
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
         if (selectedUser != null) {
-            selectedUser.setUsername(usernameField.getText());
-            selectedUser.setPassword(passwordField.getText());
-            selectedUser.setEmail(emailField.getText());
-            selectedUser.setPhone(phoneField.getText());
-            selectedUser.setRole(roleComboBox.getValue());
-            usersTable.refresh();
-            clearUserFields();
+            try {
+                if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty() || 
+                    emailField.getText().isEmpty() || roleComboBox.getValue() == null) {
+                    showAlert("Input Error", "Username, password, email and role are required.");
+                    return;
+                }
+
+                selectedUser.setUsername(usernameField.getText());
+                selectedUser.setPassword(passwordField.getText());
+                selectedUser.setEmail(emailField.getText());
+                selectedUser.setPhone(phoneField.getText());
+                selectedUser.setRole(roleComboBox.getValue());
+                
+                if (userDAO.updateUser(selectedUser)) {
+                    usersTable.refresh();
+                    clearUserFields();
+                    showAlert("Success", "User updated successfully.");
+                } else {
+                    showAlert("Error", "Failed to update user.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert("Database Error", "Failed to update user: " + e.getMessage());
+            }
         } else {
             showAlert("No Selection", "Please select a user to update.");
         }
@@ -173,8 +260,18 @@ public class AdminController {
     private void handleDeleteUser() {
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
         if (selectedUser != null) {
-            users.remove(selectedUser);
-            clearUserFields();
+            try {
+                if (userDAO.deleteUser(selectedUser.getId())) {
+                    users.remove(selectedUser);
+                    clearUserFields();
+                    showAlert("Success", "User deleted successfully.");
+                } else {
+                    showAlert("Error", "Failed to delete user.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert("Database Error", "Failed to delete user: " + e.getMessage());
+            }
         } else {
             showAlert("No Selection", "Please select a user to delete.");
         }
@@ -204,19 +301,24 @@ public class AdminController {
             return;
         }
         
-        // In a real app, this would generate actual reports from database
-        ObservableList<String> reportData = FXCollections.observableArrayList();
-        reportData.add("Services Added\t" + services.size() + " services in the system");
-        reportData.add("Users Registered\t" + users.size() + " users in the system");
-        reportData.add("Time Period\tFrom " + startDate + " to " + endDate);
-        
-        reportsTable.setItems(reportData);
-    }
-    
-    @FXML
-    private void handleExportToPDF() {
-        // In a real app, this would export the report to PDF
-        showAlert("Export", "Report would be exported to PDF in a real implementation.");
+        try {
+            ObservableList<String> reportData = FXCollections.observableArrayList();
+            
+            // Get service count
+            int serviceCount = serviceDAO.getAllServices().size();
+            reportData.add("Services Available\t" + serviceCount + " services in the system");
+            
+            // Get user count
+            int userCount = userDAO.getAllUsers().size();
+            reportData.add("Users Registered\t" + userCount + " users in the system");
+            
+            reportData.add("Time Period\tFrom " + startDate + " to " + endDate);
+            
+            reportsTable.setItems(reportData);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "Failed to generate report: " + e.getMessage());
+        }
     }
     
     // Common methods
@@ -229,6 +331,7 @@ public class AdminController {
             stage.setTitle("Car Service Management System");
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert("Error", "Failed to logout: " + e.getMessage());
         }
     }
     
