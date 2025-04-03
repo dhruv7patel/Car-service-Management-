@@ -81,7 +81,7 @@ public class AppointmentDAO {
     // Get active appointments by customer ID
     public List<Appointment> getActiveAppointmentsByCustomer(int customerId) throws SQLException {
         List<Appointment> appointments = new ArrayList<>();
-        String query = "SELECT * FROM appointments WHERE customer_id = ?";
+        String query = "SELECT * FROM appointments WHERE customer_id = ? AND status IN ('PENDING', 'ASSIGNED', 'IN_PROGRESS')";
 
         try (Connection conn = DBConnection.getConnection();
         	PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -97,7 +97,7 @@ public class AppointmentDAO {
     
     public List<Appointment> getAssignedAppointments(int technicianId) throws SQLException {
         List<Appointment> appointments = new ArrayList<>();
-        String query = "SELECT * FROM appointments WHERE assigned_user_id = ? AND status = 'ASSIGNED'";
+        String query = "SELECT * FROM appointments WHERE assigned_user_id = ? AND status IN ('PENDING', 'ASSIGNED', 'IN_PROGRESS')";
 
         try (Connection conn = DBConnection.getConnection();
         	PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -119,6 +119,20 @@ public class AppointmentDAO {
             stmt.setInt(3, appointmentId);
             stmt.executeUpdate();
         }
+    }
+    
+    public List<Appointment> getCompletedAppointmentsByCustomer(int customerId) throws SQLException {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT * FROM appointments WHERE customer_id = ? AND status = 'COMPLETED'";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, customerId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                appointments.add(mapResultSetToAppointment(rs));
+            }
+        }
+        return appointments;
     }
     
     private Appointment mapResultSetToAppointment(ResultSet rs) throws SQLException {
